@@ -12,6 +12,8 @@ public class ClockDS {
         }
     }
 
+    public ArrayList<ArrayList<Event>> getProcesses() { return processes; }
+
     public void addEvent(int process) {
         ArrayList<Event> curProc = processes.get(process);
         Event newEvent = new Event(curEventLabel, process);
@@ -136,15 +138,16 @@ public class ClockDS {
         return retString.trim();
     }
 
-    private class Event {
-        private int label;
-        private int process;
-        private Event nextPtr = null; // next event on process
-        private Event prevPtr = null; // previous event on process
-        private Event toPtr = null;   // event receiving message from this event
-        private Event fromPtr = null; // event who sent a message to this event
-        private int lamportTime = 0;
-        private ArrayList<Integer> vectorTime = new ArrayList<Integer>(
+    protected class Event {
+        protected int label;
+        protected int process;
+        protected Event nextPtr = null; // next event on process
+        protected Event prevPtr = null; // previous event on process
+        protected Event toPtr = null; // event receiving message from this event
+        protected Event fromPtr =
+            null; // event who sent a message to this event
+        protected int lamportTime = 0;
+        protected ArrayList<Integer> vectorTime = new ArrayList<Integer>(
             Collections.nCopies(ClockDS.this.processes.size(), 0));
 
         public Event(int label, int process) {
