@@ -1,6 +1,9 @@
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 
 public class VisualArea extends JPanel {
@@ -9,11 +12,23 @@ public class VisualArea extends JPanel {
 
     public VisualArea(int numProcesses) {
         processes = new ArrayList<ClockProcess>();
+        ButtonListener bListener = new ButtonListener();
         setLayout(new GridLayout(numProcesses, 1));
+
         for (int i = 0; i < numProcesses; i++) {
             ClockProcess proc = new ClockProcess(i);
+            proc.processButton.addActionListener(bListener);
             processes.add(proc);
             add(proc);
+        }
+    }
+
+    class ButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            JButton source = (JButton)e.getSource();
+            // get ID of button that was clicked
+            int buttonId = (int)source.getClientProperty("id");
+            addEvent(buttonId);
         }
     }
 

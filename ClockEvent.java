@@ -1,8 +1,10 @@
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.JPanel;
 
 public class ClockEvent extends JPanel {
+    private static final int DIAMETER = 30;
     protected int label;
     protected int process;
     protected int numProcesses;
@@ -11,7 +13,7 @@ public class ClockEvent extends JPanel {
     protected ClockEvent toPtr =
         null; // event receiving message from this event
     protected ClockEvent fromPtr =
-        null; // event who sent a message to this event
+        null; // event that sent a message to this event
     protected int lamportTime = 0;
     protected ArrayList<Integer> vectorTime;
 
@@ -21,6 +23,12 @@ public class ClockEvent extends JPanel {
         numProcesses = totalProcesses;
         this.vectorTime =
             new ArrayList<Integer>(Collections.nCopies(totalProcesses, 0));
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        g.fillOval((getWidth() - DIAMETER) / 2, (getHeight() - DIAMETER) / 2,
+                   DIAMETER, DIAMETER);
     }
 
     public String toString() {
