@@ -4,7 +4,7 @@ import javax.swing.JFrame;
 
 public class OuterFrame extends JFrame {
     public OuterFrame() {
-        VisualArea v = new VisualArea();
+        VisualArea v = new VisualArea(5);
         add(v, BorderLayout.CENTER);
         JButton b = new JButton("text here");
         add(b, BorderLayout.SOUTH);
