@@ -21,6 +21,7 @@ public class VisualArea extends JPanel {
             processes.add(proc);
             add(proc);
         }
+        addEvent(0);
     }
 
     class ButtonListener implements ActionListener {
@@ -64,6 +65,7 @@ public class VisualArea extends JPanel {
 
     public void addProcess() {
         processes.add(new ClockProcess(processes.size()));
+        // TODO: need to add button listener here
         for (ClockProcess process : processes) {
             for (ClockEvent event : process.getEvents()) {
                 event.vectorTime.add(0);
