@@ -1,10 +1,13 @@
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.JPanel;
 
 public class ClockEvent extends JPanel {
-    private static final int DIAMETER = 30;
+    private static final int DIAMETER = 40;
     protected int label;
     protected int process;
     protected int numProcesses;
@@ -16,6 +19,7 @@ public class ClockEvent extends JPanel {
         null; // event that sent a message to this event
     protected int lamportTime = 0;
     protected ArrayList<Integer> vectorTime;
+    protected boolean drawOutline = false;
 
     public ClockEvent(int label, int processNum, int totalProcesses) {
         this.label = label;
@@ -25,10 +29,27 @@ public class ClockEvent extends JPanel {
             new ArrayList<Integer>(Collections.nCopies(totalProcesses, 0));
     }
 
+    public void setDrawOutline(boolean drawOutline) {
+        this.drawOutline = drawOutline;
+    }
+
+    public boolean getDrawOutline() { return drawOutline; }
+
     @Override
     protected void paintComponent(Graphics g) {
-        g.fillOval((getWidth() - DIAMETER) / 2, (getHeight() - DIAMETER) / 2,
-                   DIAMETER, DIAMETER);
+        int x = (getWidth() - DIAMETER) / 2;
+        int y = (getHeight() - DIAMETER) / 2;
+        g.fillOval(x, y, DIAMETER, DIAMETER);
+
+        if (drawOutline) {
+            int outlineDistance = 2;
+            g.setColor(Color.RED);
+            Graphics2D g2 = (Graphics2D)g;
+            g2.setStroke(new BasicStroke(5));
+            g2.drawOval(x - outlineDistance, y - outlineDistance,
+                        DIAMETER + 2 * outlineDistance,
+                        DIAMETER + 2 * outlineDistance);
+        }
     }
 
     public String toString() {
