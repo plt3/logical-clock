@@ -3,43 +3,30 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-public class VisualArea extends JPanel implements MouseListener {
+public class VisualArea extends JPanel {
     private ArrayList<ClockProcess> processes;
     private int curEventLabel = 1;
-    private ClockEvent messageSource = null;
+    protected ClockEvent messageSource = null;
 
-    public VisualArea(int numProcesses) {
+    public VisualArea(int numProcesses, ActionListener bListener) {
         processes = new ArrayList<ClockProcess>();
-        ButtonListener bListener = new ButtonListener();
         setLayout(new GridLayout(numProcesses, 1));
 
         for (int i = 0; i < numProcesses; i++) {
-            ClockProcess proc = new ClockProcess(i);
-            proc.processButton.addActionListener(bListener);
-            processes.add(proc);
-            add(proc);
+            // ClockProcess proc = new ClockProcess(i);
+            // proc.processButton.addActionListener(bListener);
+            // processes.add(proc);
+            // add(proc);
+            addProcess(bListener);
         }
     }
 
-    class ButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            JButton source = (JButton)e.getSource();
-            // get ID of button that was clicked
-            int buttonId = (int)source.getClientProperty("id");
-            addEvent(buttonId);
-        }
-    }
-
-    public void addEvent(int process) {
+    public ClockEvent addEvent(int process) {
         ClockProcess curProc = processes.get(process);
         ClockEvent newEvent =
             new ClockEvent(curEventLabel, process, processes.size());
@@ -50,19 +37,14 @@ public class VisualArea extends JPanel implements MouseListener {
         }
         curProc.addEvent(newEvent);
         Utils.propagateTimestamps(newEvent, processes.size());
-        newEvent.addMouseListener(this);
+        // newEvent.addMouseListener(this);
         curEventLabel++;
         repaint();
+        return newEvent;
     }
 
     public ClockEvent getEvent(int process, int eventNum) {
         return processes.get(process).get(eventNum);
-    }
-
-    public void addEvents(int process, int numEvents) {
-        for (int i = 0; i < numEvents; i++) {
-            addEvent(process);
-        }
     }
 
     public void addMessage(ClockEvent from, ClockEvent to) {
@@ -71,13 +53,16 @@ public class VisualArea extends JPanel implements MouseListener {
         Utils.propagateTimestamps(to, processes.size());
     }
 
-    public void addProcess() {
-        processes.add(new ClockProcess(processes.size()));
+    public void addProcess(ActionListener bListener) {
+        ClockProcess proc = new ClockProcess(processes.size());
+        processes.add(proc);
         for (ClockProcess process : processes) {
             for (ClockEvent event : process.getEvents()) {
                 event.vectorTime.add(0);
             }
         }
+        proc.processButton.addActionListener(bListener);
+        add(proc);
     }
 
     // clear and recalculate timestamps on all events
@@ -96,33 +81,6 @@ public class VisualArea extends JPanel implements MouseListener {
             }
         }
     }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        // TODO: handle cases where messages shouldn't be added
-        ClockEvent curEvent = (ClockEvent)e.getSource();
-        if (messageSource == null) {
-            curEvent.setDrawOutline(true);
-            messageSource = curEvent;
-        } else {
-            messageSource.setDrawOutline(false);
-            addMessage(messageSource, curEvent);
-            messageSource = null;
-        }
-        repaint();
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {}
-
-    @Override
-    public void mouseReleased(MouseEvent e) {}
-
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-
-    @Override
-    public void mouseExited(MouseEvent e) {}
 
     @Override
     public void paint(Graphics g) {
