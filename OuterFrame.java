@@ -3,19 +3,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.ParseException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JSpinner;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class OuterFrame extends JFrame implements MouseListener {
     VisualArea mainArea;
+    ButtonArea buttonArea;
     ButtonListener bListener;
+    ProcessNumListener pListener;
 
     public OuterFrame() {
         bListener = new ButtonListener();
+        pListener = new ProcessNumListener();
         mainArea = new VisualArea(5, bListener);
+        buttonArea = new ButtonArea(bListener, pListener);
         add(mainArea, BorderLayout.CENTER);
-        JButton b = new JButton("text here");
-        add(b, BorderLayout.SOUTH);
+        add(buttonArea, BorderLayout.SOUTH);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
@@ -39,6 +46,7 @@ public class OuterFrame extends JFrame implements MouseListener {
             mainArea.messageSource.setDrawOutline(false);
             mainArea.addMessage(mainArea.messageSource, curEvent);
             mainArea.messageSource = null;
+            buttonArea.displayTimestamps(curEvent);
         }
         repaint();
     }
@@ -52,8 +60,7 @@ public class OuterFrame extends JFrame implements MouseListener {
     @Override
     public void mouseEntered(MouseEvent e) {
         ClockEvent curEvent = (ClockEvent)e.getSource();
-        // TODO: actually display this somewhere in the UI
-        System.out.println(curEvent.vectorTime);
+        buttonArea.displayTimestamps(curEvent);
     }
 
     @Override
@@ -62,9 +69,27 @@ public class OuterFrame extends JFrame implements MouseListener {
     class ButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             JButton source = (JButton)e.getSource();
-            // get ID of button that was clicked
-            int buttonId = (int)source.getClientProperty("id");
-            addEvent(buttonId);
+            if (source == OuterFrame.this.buttonArea.resetButton) {
+                mainArea.deleteAllEvents();
+                OuterFrame.this.buttonArea.displayTimestamps(null);
+            } else {
+                // get ID of button that was clicked
+                int buttonId = (int)source.getClientProperty("id");
+                addEvent(buttonId);
+            }
+        }
+    }
+
+    class ProcessNumListener implements ChangeListener {
+        @Override
+        public void stateChanged(ChangeEvent e) {
+            JSpinner source = (JSpinner)e.getSource();
+            try {
+                source.commitEdit();
+            } catch (ParseException ex) {
+            }
+            int value = (Integer)source.getValue();
+            System.out.println(value); // TODO: change number of processes
         }
     }
 }

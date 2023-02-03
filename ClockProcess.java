@@ -42,6 +42,11 @@ public class ClockProcess extends JPanel {
         repaint();    // necessary to redraw the process arrow
     }
 
+    public void clear() {
+        events.clear();
+        processLinePanel.removeAll();
+    }
+
     // TODO: decide if this should be just for a ProcessLine class?
     @Override
     public void paint(Graphics g) {

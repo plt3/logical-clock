@@ -3,6 +3,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JPanel;
@@ -12,16 +13,14 @@ public class VisualArea extends JPanel {
     private ArrayList<ClockProcess> processes;
     private int curEventLabel = 1;
     protected ClockEvent messageSource = null;
+    ActionListener bListener;
 
     public VisualArea(int numProcesses, ActionListener bListener) {
+        this.bListener = bListener;
         processes = new ArrayList<ClockProcess>();
         setLayout(new GridLayout(numProcesses, 1));
 
         for (int i = 0; i < numProcesses; i++) {
-            // ClockProcess proc = new ClockProcess(i);
-            // proc.processButton.addActionListener(bListener);
-            // processes.add(proc);
-            // add(proc);
             addProcess(bListener);
         }
     }
@@ -37,7 +36,6 @@ public class VisualArea extends JPanel {
         }
         curProc.addEvent(newEvent);
         Utils.propagateTimestamps(newEvent, processes.size());
-        // newEvent.addMouseListener(this);
         curEventLabel++;
         repaint();
         return newEvent;
@@ -82,6 +80,14 @@ public class VisualArea extends JPanel {
         }
     }
 
+    public void deleteAllEvents() {
+        for (ClockProcess process : processes) {
+            process.clear();
+        }
+        curEventLabel = 1;
+        repaint();
+    }
+
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -92,7 +98,6 @@ public class VisualArea extends JPanel {
         for (ClockProcess process : processes) {
             for (ClockEvent event : process.getEvents()) {
                 if (event.toPtr != null) {
-                    // TODO: draw arrowhead
                     Point p1 = SwingUtilities.convertPoint(
                         event, event.getWidth() / 2, event.getHeight() / 2,
                         this);
@@ -100,6 +105,16 @@ public class VisualArea extends JPanel {
                         event.toPtr, event.toPtr.getWidth() / 2,
                         event.toPtr.getHeight() / 2, this);
                     g.drawLine(p1.x, p1.y, p2.x, p2.y);
+
+                    // TODO: draw arrowhead
+                    // Polygon arrowHead = new Polygon();
+                    // double p2Angle = Math.atan((p2.x - p1.x) / (p2.y -
+                    // p1.y)); System.out.println(p2Angle);
+                    // arrowHead.addPoint(p2.x, p2.y);
+                    // arrowHead.addPoint(p2.x - 20, p2.y - 20);
+                    // arrowHead.addPoint(p2.x, p2.y - 20);
+                    // arrowHead.addPoint(fullWidth - 20, pHeight / 2 + 7);
+                    // g.fillPolygon(arrowHead);
                 }
             }
         }
