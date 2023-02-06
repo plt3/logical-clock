@@ -7,7 +7,6 @@ import java.util.Collections;
 import javax.swing.JPanel;
 
 public class ClockEvent extends JPanel {
-    private static final int DIAMETER = 40;
     protected int label;
     protected int process;
     protected int numProcesses;
@@ -37,18 +36,18 @@ public class ClockEvent extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        int x = (getWidth() - DIAMETER) / 2;
-        int y = (getHeight() - DIAMETER) / 2;
-        g.fillOval(x, y, DIAMETER, DIAMETER);
+        int x = (getWidth() - VisualArea.DIAMETER) / 2;
+        int y = (getHeight() - VisualArea.DIAMETER) / 2;
+        g.fillOval(x, y, VisualArea.DIAMETER, VisualArea.DIAMETER);
 
         if (drawOutline) {
-            int outlineDistance = 2;
+            int outlineDistance = VisualArea.DIAMETER / 20;
             g.setColor(Color.RED);
             Graphics2D g2 = (Graphics2D)g;
-            g2.setStroke(new BasicStroke(5));
+            g2.setStroke(new BasicStroke(VisualArea.DIAMETER / 8));
             g2.drawOval(x - outlineDistance, y - outlineDistance,
-                        DIAMETER + 2 * outlineDistance,
-                        DIAMETER + 2 * outlineDistance);
+                        VisualArea.DIAMETER + 2 * outlineDistance,
+                        VisualArea.DIAMETER + 2 * outlineDistance);
         }
     }
 

@@ -55,11 +55,7 @@ public class ClockProcess extends JPanel {
         int bWidth = processButton.getWidth();
         int fullWidth = getWidth();
         int pHeight = processLinePanel.getHeight();
-        g.drawLine(bWidth, pHeight / 2, fullWidth, pHeight / 2);
-        Polygon arrowHead = new Polygon();
-        arrowHead.addPoint(fullWidth, pHeight / 2);
-        arrowHead.addPoint(fullWidth - 20, pHeight / 2 - 7);
-        arrowHead.addPoint(fullWidth - 20, pHeight / 2 + 7);
-        g.fillPolygon(arrowHead);
+        Utils.drawLineWithArrow(g, bWidth, pHeight / 2, fullWidth, pHeight / 2,
+                                0);
     }
 }

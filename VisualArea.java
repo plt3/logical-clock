@@ -3,13 +3,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class VisualArea extends JPanel {
+    public static final int DIAMETER = 40;
     private ArrayList<ClockProcess> processes;
     private int curEventLabel = 1;
     protected ClockEvent messageSource = null;
@@ -104,17 +104,9 @@ public class VisualArea extends JPanel {
                     Point p2 = SwingUtilities.convertPoint(
                         event.toPtr, event.toPtr.getWidth() / 2,
                         event.toPtr.getHeight() / 2, this);
-                    g.drawLine(p1.x, p1.y, p2.x, p2.y);
 
-                    // TODO: draw arrowhead
-                    // Polygon arrowHead = new Polygon();
-                    // double p2Angle = Math.atan((p2.x - p1.x) / (p2.y -
-                    // p1.y)); System.out.println(p2Angle);
-                    // arrowHead.addPoint(p2.x, p2.y);
-                    // arrowHead.addPoint(p2.x - 20, p2.y - 20);
-                    // arrowHead.addPoint(p2.x, p2.y - 20);
-                    // arrowHead.addPoint(fullWidth - 20, pHeight / 2 + 7);
-                    // g.fillPolygon(arrowHead);
+                    Utils.drawLineWithArrow(g, p1.x, p1.y, p2.x, p2.y,
+                                            DIAMETER / 2);
                 }
             }
         }

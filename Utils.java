@@ -1,3 +1,5 @@
+import java.awt.Graphics;
+import java.awt.Polygon;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -52,5 +54,46 @@ public class Utils {
                 propagateTimestamps(event.toPtr, numProcesses);
             }
         }
+    }
+
+    // draw line between (x1, y1) and (x2, y2) with an arrow whose point is
+    // offset pixels away from (x2, y2)
+    public static void drawLineWithArrow(Graphics g, int x1, int y1, int x2,
+                                         int y2, int offset) {
+        // slightly reduce diameter to make arrowhead closer to event
+        double diameterCorrection = 0.85;
+        int arrowLength = 20;
+        int arrowWidth = 7;
+
+        double deltaX = x2 - x1;
+        double deltaY = y2 - y1;
+        double p2Angle = Math.atan(deltaY / deltaX);
+
+        Polygon arrow = new Polygon();
+        // coordinates of point of arrow
+        int arrowHeadX =
+            (int)(x2 - offset * diameterCorrection * Math.cos(p2Angle));
+        int arrowHeadY =
+            (int)(y2 - offset * diameterCorrection * Math.sin(p2Angle));
+        // coordinates of left side of arrow
+        int arrowLeftX = (int)(arrowHeadX - arrowLength * Math.cos(p2Angle) +
+                               arrowWidth * Math.sin(p2Angle));
+        int arrowLeftY = (int)(arrowHeadY - arrowLength * Math.sin(p2Angle) -
+                               arrowWidth * Math.cos(p2Angle));
+        // coordinates of right side of arrow
+        int arrowRightX =
+            (int)(arrowLeftX - 2 * arrowWidth * Math.sin(p2Angle));
+        int arrowRightY =
+            (int)(arrowLeftY + 2 * arrowWidth * Math.cos(p2Angle));
+
+        // only draw line to middle of arrow (to make nice arrowhead)
+        int middleArrowX = (int)(arrowHeadX - arrowLength * Math.cos(p2Angle));
+        int middleArrowY = (int)(arrowHeadY - arrowLength * Math.sin(p2Angle));
+        g.drawLine(x1, y1, middleArrowX, middleArrowY);
+
+        arrow.addPoint(arrowHeadX, arrowHeadY);
+        arrow.addPoint(arrowLeftX, arrowLeftY);
+        arrow.addPoint(arrowRightX, arrowRightY);
+        g.fillPolygon(arrow);
     }
 }
