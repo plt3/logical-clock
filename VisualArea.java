@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 public class VisualArea extends JPanel {
-    public static final int DIAMETER = 40;
+    protected static final int DIAMETER = 40;
     private ArrayList<ClockProcess> processes;
     private int curEventLabel = 1;
     protected ClockEvent messageSource = null;
@@ -18,11 +18,8 @@ public class VisualArea extends JPanel {
     public VisualArea(int numProcesses, ActionListener bListener) {
         this.bListener = bListener;
         processes = new ArrayList<ClockProcess>();
-        setLayout(new GridLayout(numProcesses, 1));
-
-        for (int i = 0; i < numProcesses; i++) {
-            addProcess(bListener);
-        }
+        setLayout(new GridLayout(0, 1));
+        setNumProcesses(numProcesses, bListener);
     }
 
     public ClockEvent addEvent(int process) {
@@ -51,16 +48,63 @@ public class VisualArea extends JPanel {
         Utils.propagateTimestamps(to, processes.size());
     }
 
-    public void addProcess(ActionListener bListener) {
+    // add a process to the end while keeping all other events intact
+    public void addProcess(ActionListener bListener, boolean refresh) {
         ClockProcess proc = new ClockProcess(processes.size());
         processes.add(proc);
+
         for (ClockProcess process : processes) {
             for (ClockEvent event : process.getEvents()) {
                 event.vectorTime.add(0);
             }
         }
+
         proc.processButton.addActionListener(bListener);
         add(proc);
+
+        if (refresh) {
+            revalidate();
+            repaint();
+        }
+    }
+
+    // remove last process while keeping all other events intact
+    public void removeProcess(boolean refresh) {
+        int lastInd = processes.size() - 1;
+
+        for (ClockProcess process : processes) {
+            for (ClockEvent event : process.getEvents()) {
+                event.vectorTime.remove(lastInd);
+            }
+        }
+        // remove messages to and from events on process that is getting removed
+        for (ClockEvent event : processes.get(lastInd).getEvents()) {
+            if (event.fromPtr != null) {
+                event.fromPtr.toPtr = null;
+            }
+            if (event.toPtr != null) {
+                event.toPtr.fromPtr = null;
+            }
+        }
+
+        remove(lastInd);
+        processes.remove(lastInd);
+
+        if (refresh) {
+            revalidate();
+            repaint();
+        }
+    }
+
+    public void setNumProcesses(int numProcesses, ActionListener bListener) {
+        removeAll();
+        processes.clear();
+        curEventLabel = 1;
+        for (int i = 0; i < numProcesses; i++) {
+            addProcess(bListener, false);
+        }
+        revalidate();
+        repaint();
     }
 
     // clear and recalculate timestamps on all events

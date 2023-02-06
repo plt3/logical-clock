@@ -1,6 +1,5 @@
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Polygon;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;

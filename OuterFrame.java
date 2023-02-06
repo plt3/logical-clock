@@ -15,11 +15,12 @@ public class OuterFrame extends JFrame implements MouseListener {
     ButtonArea buttonArea;
     ButtonListener bListener;
     ProcessNumListener pListener;
+    protected static final int DEFAULT_NUM_PROCESSES = 5;
 
     public OuterFrame() {
         bListener = new ButtonListener();
         pListener = new ProcessNumListener();
-        mainArea = new VisualArea(5, bListener);
+        mainArea = new VisualArea(DEFAULT_NUM_PROCESSES, bListener);
         buttonArea = new ButtonArea(bListener, pListener);
         add(mainArea, BorderLayout.CENTER);
         add(buttonArea, BorderLayout.SOUTH);
@@ -81,6 +82,8 @@ public class OuterFrame extends JFrame implements MouseListener {
     }
 
     class ProcessNumListener implements ChangeListener {
+        private int prevValue = OuterFrame.DEFAULT_NUM_PROCESSES;
+
         @Override
         public void stateChanged(ChangeEvent e) {
             JSpinner source = (JSpinner)e.getSource();
@@ -89,7 +92,26 @@ public class OuterFrame extends JFrame implements MouseListener {
             } catch (ParseException ex) {
             }
             int value = (Integer)source.getValue();
-            System.out.println(value); // TODO: change number of processes
+            if (value != prevValue) {
+                if (value <= 0) {
+                    // don't let value go below 1
+                    source.setValue(1);
+                } else {
+                    OuterFrame.this.buttonArea.displayTimestamps(null);
+                    if (value == prevValue + 1) {
+                        // just call addProcess/removeProcess if
+                        // incrementing/decrementing
+                        // number of processes
+                        mainArea.addProcess(bListener, true);
+                    } else if (value == prevValue - 1) {
+                        mainArea.removeProcess(true);
+                    } else {
+                        // otherwise redraw all processes
+                        mainArea.setNumProcesses(value, bListener);
+                    }
+                    prevValue = value;
+                }
+            }
         }
     }
 }

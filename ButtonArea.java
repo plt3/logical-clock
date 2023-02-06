@@ -26,6 +26,19 @@ public class ButtonArea extends JPanel {
 
         JPanel buttonPanel = new JPanel();
         resetButton = new JButton("Clear all events");
+        JLabel spinnerLabel = new JLabel("Number of processes:");
+        makeProcessNumSpinner(pListener);
+
+        resetButton.addActionListener(bListener);
+        buttonPanel.add(resetButton);
+        buttonPanel.add(spinnerLabel);
+        buttonPanel.add(processNumSpinner);
+
+        add(timestampLabel);
+        add(buttonPanel);
+    }
+
+    private void makeProcessNumSpinner(ChangeListener pListener) {
         processNumSpinner = new JSpinner();
         JComponent spinnerEditor = processNumSpinner.getEditor();
         JFormattedTextField jftf =
@@ -37,13 +50,7 @@ public class ButtonArea extends JPanel {
         // TODO: check if this is necessary
         formatter.setCommitsOnValidEdit(true); // send ChangeEvents immediately
         processNumSpinner.addChangeListener(pListener);
-
-        resetButton.addActionListener(bListener);
-        buttonPanel.add(resetButton);
-        buttonPanel.add(processNumSpinner);
-
-        add(timestampLabel);
-        add(buttonPanel);
+        processNumSpinner.setValue(OuterFrame.DEFAULT_NUM_PROCESSES);
     }
 
     public void displayTimestamps(ClockEvent event) {

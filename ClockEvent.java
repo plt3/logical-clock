@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 public class ClockEvent extends JPanel {
     protected int label;
     protected int process;
-    protected int numProcesses;
     protected ClockEvent nextPtr = null; // next event on process
     protected ClockEvent prevPtr = null; // previous event on process
     protected ClockEvent toPtr =
@@ -23,7 +22,6 @@ public class ClockEvent extends JPanel {
     public ClockEvent(int label, int processNum, int totalProcesses) {
         this.label = label;
         this.process = processNum;
-        numProcesses = totalProcesses;
         this.vectorTime =
             new ArrayList<Integer>(Collections.nCopies(totalProcesses, 0));
     }
