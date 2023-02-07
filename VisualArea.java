@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
 public class VisualArea extends JPanel {
     protected static final int DIAMETER = 40;
     private ArrayList<ClockProcess> processes;
-    private int curEventLabel = 1;
+    protected int curEventLabel = 0;
     protected ClockEvent messageSource = null;
     ActionListener bListener;
 
@@ -41,6 +41,17 @@ public class VisualArea extends JPanel {
 
     public ClockEvent getEvent(int process, int eventNum) {
         return processes.get(process).get(eventNum);
+    }
+
+    public ClockEvent getEvent(String labelStr) {
+        for (ClockProcess process : processes) {
+            for (ClockEvent event : process.getEvents()) {
+                if (event.label.equals(labelStr)) {
+                    return event;
+                }
+            }
+        }
+        return null;
     }
 
     public void addMessage(ClockEvent from, ClockEvent to) {
@@ -102,7 +113,7 @@ public class VisualArea extends JPanel {
     public void setNumProcesses(int numProcesses) {
         removeAll();
         processes.clear();
-        curEventLabel = 1;
+        curEventLabel = 0;
         for (int i = 0; i < numProcesses; i++) {
             addProcess(false);
         }
@@ -131,7 +142,7 @@ public class VisualArea extends JPanel {
         for (ClockProcess process : processes) {
             process.clear();
         }
-        curEventLabel = 1;
+        curEventLabel = 0;
         repaint();
     }
 

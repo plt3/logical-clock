@@ -119,6 +119,8 @@ public class OuterFrame extends JFrame implements MouseListener {
     }
 
     class KeybindListener implements KeyListener {
+        private ClockEvent prevEvent = null;
+
         @Override
         public void keyTyped(KeyEvent e) {
             char keyChar = e.getKeyChar();
@@ -138,6 +140,25 @@ public class OuterFrame extends JFrame implements MouseListener {
                 spinner.setValue(spinnerVal + 1);
             } else if (keyChar == '-' && spinnerVal > 1) {
                 spinner.setValue(spinnerVal - 1);
+            } else if (Character.isLetter(keyChar) &&
+                       OuterFrame.this.mainArea.curEventLabel <= 26) {
+                ClockEvent event =
+                    OuterFrame.this.mainArea.getEvent(String.valueOf(keyChar));
+                if (event != null) {
+                    if (prevEvent == null) {
+                        event.setDrawOutline(true);
+                        prevEvent = event;
+                    } else {
+                        if (prevEvent != event) {
+                            OuterFrame.this.mainArea.addMessage(prevEvent,
+                                                                event);
+                        }
+                        prevEvent.setDrawOutline(false);
+                        prevEvent = null;
+                    }
+                    buttonArea.displayTimestamps(event);
+                    repaint();
+                }
             }
         }
 

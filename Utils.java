@@ -96,4 +96,22 @@ public class Utils {
         arrow.addPoint(arrowRightX, arrowRightY);
         g.fillPolygon(arrow);
     }
+
+    // convert integer to letter at that index in the alphabet, using multiple
+    // letters if number > 26. Shamelessly stolen from
+    // https://stackoverflow.com/a/30259745/14146321
+    public static String convertNumberToLabel(int label) {
+        if (label < 0) {
+            return "-" + convertNumberToLabel(-label - 1);
+        }
+
+        int quot = label / 26;
+        int rem = label % 26;
+        char letter = (char)((int)'a' + rem);
+        if (quot == 0) {
+            return "" + letter;
+        } else {
+            return convertNumberToLabel(quot - 1) + letter;
+        }
+    }
 }

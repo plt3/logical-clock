@@ -1,13 +1,17 @@
 import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class ClockEvent extends JPanel {
-    protected int label;
+    protected String label;
     protected int process;
     protected ClockEvent nextPtr = null; // next event on process
     protected ClockEvent prevPtr = null; // previous event on process
@@ -18,12 +22,19 @@ public class ClockEvent extends JPanel {
     protected int lamportTime = 0;
     protected ArrayList<Integer> vectorTime;
     protected boolean drawOutline = false;
+    private JLabel centerLabel;
 
-    public ClockEvent(int label, int processNum, int totalProcesses) {
-        this.label = label;
+    public ClockEvent(int labelInt, int processNum, int totalProcesses) {
+        this.label = Utils.convertNumberToLabel(labelInt);
+        setLayout(new BorderLayout());
+
         this.process = processNum;
         this.vectorTime =
             new ArrayList<Integer>(Collections.nCopies(totalProcesses, 0));
+        centerLabel = new JLabel(label, SwingConstants.CENTER);
+        centerLabel.setFont(centerLabel.getFont().deriveFont(Font.BOLD, 20f));
+        centerLabel.setForeground(Color.WHITE);
+        add(centerLabel, BorderLayout.CENTER);
     }
 
     public void setDrawOutline(boolean drawOutline) {
@@ -33,7 +44,8 @@ public class ClockEvent extends JPanel {
     public boolean getDrawOutline() { return drawOutline; }
 
     @Override
-    protected void paintComponent(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         int x = (getWidth() - VisualArea.DIAMETER) / 2;
         int y = (getHeight() - VisualArea.DIAMETER) / 2;
         g.fillOval(x, y, VisualArea.DIAMETER, VisualArea.DIAMETER);
@@ -50,7 +62,7 @@ public class ClockEvent extends JPanel {
     }
 
     public String toString() {
-        String retString = "(" + String.valueOf(label);
+        String retString = "(" + label;
         retString += ":" + String.valueOf(lamportTime);
         return retString + ")";
     }
