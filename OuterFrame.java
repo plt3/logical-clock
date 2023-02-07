@@ -1,6 +1,8 @@
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.ParseException;
@@ -11,10 +13,10 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 public class OuterFrame extends JFrame implements MouseListener {
-    VisualArea mainArea;
-    ButtonArea buttonArea;
-    ButtonListener bListener;
-    ProcessNumListener pListener;
+    protected VisualArea mainArea;
+    protected ButtonArea buttonArea;
+    protected ButtonListener bListener;
+    protected ProcessNumListener pListener;
     protected static final int DEFAULT_NUM_PROCESSES = 5;
 
     public OuterFrame() {
@@ -25,15 +27,13 @@ public class OuterFrame extends JFrame implements MouseListener {
         add(mainArea, BorderLayout.CENTER);
         add(buttonArea, BorderLayout.SOUTH);
 
+        setFocusable(true);
+        addKeyListener(new KeybindListener());
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200, 800);
         setTitle("Logical Clock Calculator");
         setVisible(true);
-    }
-
-    public void addEvent(int process) {
-        ClockEvent newEvent = mainArea.addEvent(process);
-        newEvent.addMouseListener(this);
     }
 
     @Override
@@ -50,6 +50,7 @@ public class OuterFrame extends JFrame implements MouseListener {
             buttonArea.displayTimestamps(curEvent);
         }
         repaint();
+        OuterFrame.this.requestFocusInWindow();
     }
 
     @Override
@@ -76,8 +77,9 @@ public class OuterFrame extends JFrame implements MouseListener {
             } else {
                 // get ID of button that was clicked
                 int buttonId = (int)source.getClientProperty("id");
-                addEvent(buttonId);
+                OuterFrame.this.mainArea.addEvent(buttonId, OuterFrame.this);
             }
+            OuterFrame.this.requestFocusInWindow();
         }
     }
 
@@ -102,16 +104,47 @@ public class OuterFrame extends JFrame implements MouseListener {
                         // just call addProcess/removeProcess if
                         // incrementing/decrementing
                         // number of processes
-                        mainArea.addProcess(bListener, true);
+                        mainArea.addProcess(true);
                     } else if (value == prevValue - 1) {
                         mainArea.removeProcess(true);
                     } else {
                         // otherwise redraw all processes
-                        mainArea.setNumProcesses(value, bListener);
+                        mainArea.setNumProcesses(value);
                     }
                     prevValue = value;
                 }
             }
+            OuterFrame.this.requestFocusInWindow();
         }
+    }
+
+    class KeybindListener implements KeyListener {
+        @Override
+        public void keyTyped(KeyEvent e) {
+            char keyChar = e.getKeyChar();
+            JSpinner spinner = OuterFrame.this.buttonArea.processNumSpinner;
+            int spinnerVal = (int)spinner.getValue();
+
+            if (Character.isDigit(keyChar)) {
+                // press number keys to add events to corresponding process
+                int processNum = Character.getNumericValue(keyChar) - 1;
+                if (processNum >= 0 &&
+                    processNum < mainArea.getNumProcesses()) {
+                    OuterFrame.this.mainArea.addEvent(processNum,
+                                                      OuterFrame.this);
+                }
+            } else if (keyChar == '+') {
+                // add/remove processes with +/-
+                spinner.setValue(spinnerVal + 1);
+            } else if (keyChar == '-' && spinnerVal > 1) {
+                spinner.setValue(spinnerVal - 1);
+            }
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {}
+
+        @Override
+        public void keyReleased(KeyEvent e) {}
     }
 }

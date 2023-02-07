@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -19,10 +20,10 @@ public class VisualArea extends JPanel {
         this.bListener = bListener;
         processes = new ArrayList<ClockProcess>();
         setLayout(new GridLayout(0, 1));
-        setNumProcesses(numProcesses, bListener);
+        setNumProcesses(numProcesses);
     }
 
-    public ClockEvent addEvent(int process) {
+    public void addEvent(int process, MouseListener mListener) {
         ClockProcess curProc = processes.get(process);
         ClockEvent newEvent =
             new ClockEvent(curEventLabel, process, processes.size());
@@ -35,7 +36,7 @@ public class VisualArea extends JPanel {
         Utils.propagateTimestamps(newEvent, processes.size());
         curEventLabel++;
         repaint();
-        return newEvent;
+        newEvent.addMouseListener(mListener);
     }
 
     public ClockEvent getEvent(int process, int eventNum) {
@@ -49,7 +50,7 @@ public class VisualArea extends JPanel {
     }
 
     // add a process to the end while keeping all other events intact
-    public void addProcess(ActionListener bListener, boolean refresh) {
+    public void addProcess(boolean refresh) {
         ClockProcess proc = new ClockProcess(processes.size());
         processes.add(proc);
 
@@ -96,12 +97,14 @@ public class VisualArea extends JPanel {
         }
     }
 
-    public void setNumProcesses(int numProcesses, ActionListener bListener) {
+    public int getNumProcesses() { return processes.size(); }
+
+    public void setNumProcesses(int numProcesses) {
         removeAll();
         processes.clear();
         curEventLabel = 1;
         for (int i = 0; i < numProcesses; i++) {
-            addProcess(bListener, false);
+            addProcess(false);
         }
         revalidate();
         repaint();
