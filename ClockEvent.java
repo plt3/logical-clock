@@ -1,14 +1,10 @@
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 public class ClockEvent extends JPanel {
     protected String label;
@@ -22,19 +18,13 @@ public class ClockEvent extends JPanel {
     protected int lamportTime = 0;
     protected ArrayList<Integer> vectorTime;
     protected boolean drawOutline = false;
-    private JLabel centerLabel;
 
     public ClockEvent(int labelInt, int processNum, int totalProcesses) {
         this.label = Utils.convertNumberToLabel(labelInt);
-        setLayout(new BorderLayout());
 
         this.process = processNum;
         this.vectorTime =
             new ArrayList<Integer>(Collections.nCopies(totalProcesses, 0));
-        centerLabel = new JLabel(label, SwingConstants.CENTER);
-        centerLabel.setFont(centerLabel.getFont().deriveFont(Font.BOLD, 20f));
-        centerLabel.setForeground(Color.WHITE);
-        add(centerLabel, BorderLayout.CENTER);
     }
 
     public void setDrawOutline(boolean drawOutline) {

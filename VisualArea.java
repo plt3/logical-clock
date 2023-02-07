@@ -1,4 +1,7 @@
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -14,11 +17,13 @@ public class VisualArea extends JPanel {
     private ArrayList<ClockProcess> processes;
     protected int curEventLabel = 0;
     protected ClockEvent messageSource = null;
-    ActionListener bListener;
+    private ActionListener bListener;
+    private Font font;
 
     public VisualArea(int numProcesses, ActionListener bListener) {
         this.bListener = bListener;
         processes = new ArrayList<ClockProcess>();
+        font = getFont().deriveFont(Font.BOLD, 20f);
         setLayout(new GridLayout(0, 1));
         setNumProcesses(numProcesses);
     }
@@ -151,21 +156,30 @@ public class VisualArea extends JPanel {
         super.paint(g);
         Graphics2D g2 = (Graphics2D)g;
         g2.setStroke(new BasicStroke(3));
+        g.setFont(font);
 
-        // go through each event and draw message line if there is one
+        // go through each event and draw event label (otherwise message/process
+        // lines would overlap it). Also draw message line if there is one
         for (ClockProcess process : processes) {
             for (ClockEvent event : process.getEvents()) {
+                g.setColor(Color.BLACK);
+                Point p1 = SwingUtilities.convertPoint(
+                    event, event.getWidth() / 2, event.getHeight() / 2, this);
+                FontMetrics metrics = g.getFontMetrics(font);
+
                 if (event.toPtr != null) {
-                    Point p1 = SwingUtilities.convertPoint(
-                        event, event.getWidth() / 2, event.getHeight() / 2,
-                        this);
                     Point p2 = SwingUtilities.convertPoint(
                         event.toPtr, event.toPtr.getWidth() / 2,
                         event.toPtr.getHeight() / 2, this);
-
                     Utils.drawLineWithArrow(g, p1.x, p1.y, p2.x, p2.y,
                                             DIAMETER / 2);
                 }
+
+                // draw event label in the middle of event
+                int x = p1.x - metrics.stringWidth(event.label) / 2;
+                int y = p1.y - metrics.getHeight() / 2 + metrics.getAscent();
+                g.setColor(Color.WHITE);
+                g.drawString(event.label, x, y);
             }
         }
     }
